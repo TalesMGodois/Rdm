@@ -4,7 +4,7 @@ require 'googlecharts'
 
 Plan = Roo::Spreadsheet.open("sheets/Selic.xlsx")
 
-selic.sheet('planilha').column(1)[1]
+Plan.sheet('planilha').column(1)[1]
 
 puts Gchart.bar( :data => [[1,2,4,67,100,41,234],[45,23,67,12,67,300, 250]], 
             :title => 'SD Ruby Fu level', 
