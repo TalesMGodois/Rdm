@@ -11,4 +11,8 @@ gem 'gemcutter', '~> 0.7.1'
 
 gem 'mongo_ext', '~> 0.19.3'
 
+gem 'linked-list', '~> 0.0.9'
+
+gem 'rubytree', '~> 0.9.7'
+
 # gem "rails"
