@@ -1,18 +1,34 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    bson (4.0.1)
+    gemcutter (0.7.1)
     googlecharts (1.6.12)
+    json (1.8.3)
+    linked-list (0.0.9)
     mini_portile2 (2.0.0)
+    mongo (2.2.2)
+      bson (~> 4.0)
+    mongo_ext (0.19.3)
     nokogiri (1.6.7.2)
       mini_portile2 (~> 2.0.0.rc2)
     roo (2.1.1)
       nokogiri (~> 1)
       rubyzip (~> 1.1, < 2.0.0)
+    rubytree (0.9.7)
+      json (~> 1.8)
+      structured_warnings (~> 0.2)
     rubyzip (1.1.7)
+    structured_warnings (0.2.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  gemcutter (~> 0.7.1)
   googlecharts (~> 1.6, >= 1.6.12)
+  linked-list (~> 0.0.9)
+  mongo (~> 2.2, >= 2.2.2)
+  mongo_ext (~> 0.19.3)
   roo (~> 2.1.0)
+  rubytree (~> 0.9.7)
