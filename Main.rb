@@ -2,7 +2,7 @@ require 'roo'
 require 'googlecharts'
 
 
-selic = Roo::Spreadsheet.open("sheets/Selic.xlsx")
+Plan = Roo::Spreadsheet.open("sheets/Selic.xlsx")
 
 selic.sheet('planilha').column(1)[1]
 
