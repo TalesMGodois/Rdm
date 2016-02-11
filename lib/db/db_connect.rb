@@ -2,15 +2,12 @@ require 'roo'
 
 module DB
 
-
-
 	SELIC	= "S"
 	PIB 	= "P"
 	IPCA 	= "I"
 	DOLAR  	= "D"
 
 	TABLE = Hash.new()
-
 	
 	pib_ot = Hash.new()
 	ipca_ot = Hash.new()
@@ -26,26 +23,40 @@ module DB
 
 	def self.simplify
 		selic_ot = Hash.new()
-		aux = 2015 - 2007
-		aux = aux + 1
+
 		months = TABLE[:selic].column(1)
-		for i in 1 .. aux
-			data = TABLE[:selic].column(i + 1)
-			year = data.shift()
 
+		years = TABLE[:selic].row(1)
+		aux = years.size() - 1
+
+		for i in 1..aux
+			data = TABLE[:selic].column(i +1)
+			data.shift()
+			j = 0
 			data.each do |item|
-
-				selic_ot["#{months[i]}-#{year}"] = item
+				j = j+1
+				selic_ot["#{months[j]}-#{years[i]}"] = item
 			end
 		end
 
-		puts selic_ot
-
+		self.each_modify(selic_ot)
 	end
 
-	def modify(ant,prox)
+	def self.modify(ant,prox)
 		return 1 if([ant,prox].max == prox) 
 		return 0 if([ant,prox].max == ant) 
+	end
+
+	def self.each_modify(hash)
+		hash_simple = Hash.new
+		aux = 0
+		hash.each do |k,v|
+			hash_simple[k] =self.modify(aux,v)
+			aux = v 			
+		end
+		hash_simple.each do |k,v|
+			puts v
+		end
 	end
 	
 end
