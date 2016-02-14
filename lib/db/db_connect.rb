@@ -1,47 +1,50 @@
 require 'roo'
+require 'matrix'
 
 module DB
 
 	SELIC	= "S"
-	# PIB 	= "P"
 	IPCA 	= "I"
 	DOLAR  	= "D"
 
-	TABLE = Hash.new()
+	
 	
 	pib_ot = Hash.new()
 	ipca_ot = Hash.new()
 	dolar_ot = Hash.new()
 
-	# table 		= Roo::Spreadsheet.open("../sheets/Dados_Tabelados.xlsx")
-	table = Roo::Spreadsheet.open("lib/db/sheets/Dados_Tabelados.xlsx")
 	
-	TABLE[:selic] = table.sheet('Selic_Otimizado')
-	TABLE[:pib] 	= table.sheet('Pib_Otimizado')
-	TABLE[:ipca] 	= table.sheet('IPCA_Otimizado')
-	TABLE[:dolar] = table.sheet('Dolar_Otimizado')
-
 
 	def self.simplify
-		selic = self.getArray(TABLE[:selic])
-		ipca  = self.getArray(TABLE[:ipca])
-		dolar = self.getArray(TABLE[:dolar])
 
-		dados = Object.new
-		dados[:selic] = selic
-		dados[:ipca] = ipca
-		dados[:ipca] = ipca
+		table = Roo::Spreadsheet.open("lib/db/sheets/Dados_Tabelados.xlsx")
 
-		self.traduct(dadps)
+		data_table = Hash.new()
+
+		data_table[:selic]   = table.sheet('Selic_Otimizado')
+		selic = self.getArray(data_table[:selic])
+
+		data_table[:ipca] 	= table.sheet('IPCA_Otimizado')
+		ipca  = self.getArray(data_table[:ipca])
+		
+		data_table[:dolar]   = table.sheet('Dolar_Otimizado')
+		dolar = self.getArray(data_table[:dolar])
+
+		data = Hash.new
+
+		data[:selic] = selic
+		data[:ipca] = ipca
+		data[:dolar] = dolar
+
+		self.traduct(data)
 
 
 	end
 
 	def self.getArray(sheet)
-		return sheet
 
 		if sheet.class == Roo::Excelx 
-			selic_ot = Hash.new()
+			hs = Hash.new()
 
 			months = sheet.column(1)
 
@@ -49,16 +52,17 @@ module DB
 			aux = years.size() - 1
 
 			for i in 1..aux
-				data = TABLE[:selic].column(i +1)
+				data = sheet.column(i +1)
 				data.shift()
 				j = 0
 				data.each do |item|
 					j = j+1
-					selic_ot["#{months[j]}-#{years[i]}"] = item
+					hs["#{months[j]}-#{years[i]}"] = item
 				end
 			end
 
-			return self.each_modify(selic_ot)
+			# return hs
+			return self.each_modify(hs)
 		else
 			return "not a excel file"
 		end
@@ -74,18 +78,48 @@ module DB
 		aux = 0
 
 		hash.each do |k,v|
-			hash_simple[k] =self.modify(aux,v)
+			hash_simple[k] =self.modify(aux,v)#
 			aux = v 			
 		end
+
 		return hash_simple
 	end
 
-	def self.traduct(dados)
-		selic = dados.selic
-		
+	def self.traduct(data)
+		selic = data[:selic]
+		ipca = data[:ipca]
+		dolar = data[:dolar]
 
+		final_table = Hash.new()
+
+		selic.keys.each do |k|
+			final_table[k] = Array.new()
+		end
+
+		selic.each do |k,v|
+			final_table[k].push("S") if v == 1
+
+		end
+
+		ipca.each do |k,v|
+			final_table[k].push("I") if v == 1
+
+		end
+
+		dolar.each do |k,v|
+			final_table[k].push("D") if v == 1
+
+		end
+
+		aux = 0
+		final_table.each do |k,v|
+			if v.size ==0
+				aux = aux +1
+			end
+		end
+		return final_table
+		# puts final_table
 	end
-
 	
 end
 
