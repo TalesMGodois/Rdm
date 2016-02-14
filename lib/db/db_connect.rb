@@ -3,7 +3,7 @@ require 'roo'
 module DB
 
 	SELIC	= "S"
-	PIB 	= "P"
+	# PIB 	= "P"
 	IPCA 	= "I"
 	DOLAR  	= "D"
 
@@ -21,25 +21,47 @@ module DB
 	TABLE[:ipca] 	= table.sheet('IPCA_Otimizado')
 	TABLE[:dolar] = table.sheet('Dolar_Otimizado')
 
+
 	def self.simplify
-		selic_ot = Hash.new()
+		selic = self.getArray(TABLE[:selic])
+		ipca  = self.getArray(TABLE[:ipca])
+		dolar = self.getArray(TABLE[:dolar])
 
-		months = TABLE[:selic].column(1)
+		dados = Object.new
+		dados[:selic] = selic
+		dados[:ipca] = ipca
+		dados[:ipca] = ipca
 
-		years = TABLE[:selic].row(1)
-		aux = years.size() - 1
+		self.traduct(dadps)
 
-		for i in 1..aux
-			data = TABLE[:selic].column(i +1)
-			data.shift()
-			j = 0
-			data.each do |item|
-				j = j+1
-				selic_ot["#{months[j]}-#{years[i]}"] = item
+
+	end
+
+	def self.getArray(sheet)
+		return sheet
+
+		if sheet.class == Roo::Excelx 
+			selic_ot = Hash.new()
+
+			months = sheet.column(1)
+
+			years = sheet.row(1)
+			aux = years.size() - 1
+
+			for i in 1..aux
+				data = TABLE[:selic].column(i +1)
+				data.shift()
+				j = 0
+				data.each do |item|
+					j = j+1
+					selic_ot["#{months[j]}-#{years[i]}"] = item
+				end
 			end
-		end
 
-		self.each_modify(selic_ot)
+			return self.each_modify(selic_ot)
+		else
+			return "not a excel file"
+		end
 	end
 
 	def self.modify(ant,prox)
@@ -50,14 +72,20 @@ module DB
 	def self.each_modify(hash)
 		hash_simple = Hash.new
 		aux = 0
+
 		hash.each do |k,v|
 			hash_simple[k] =self.modify(aux,v)
 			aux = v 			
 		end
-		hash_simple.each do |k,v|
-			puts v
-		end
+		return hash_simple
 	end
+
+	def self.traduct(dados)
+		selic = dados.selic
+		
+
+	end
+
 	
 end
 
