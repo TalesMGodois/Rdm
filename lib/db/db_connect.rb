@@ -1,7 +1,10 @@
 require 'roo'
-require 'matrix'
+load 'lib/db/AssociationRules.rb'
+
 
 module DB
+
+
 
 	SELIC	= "S"
 	IPCA 	= "I"
@@ -16,8 +19,10 @@ module DB
 	
 
 	def self.simplify
+		indicadores = [SELIC,IPCA,DOLAR]
 
 		table = Roo::Spreadsheet.open("lib/db/sheets/Dados_Tabelados.xlsx")
+
 
 		data_table = Hash.new()
 
@@ -36,8 +41,26 @@ module DB
 		data[:ipca] = ipca
 		data[:dolar] = dolar
 
-		self.traduct(data)
+		finalTable = self.traduct(data)
 
+		rAssociation = AssociationRules.new(finalTable)
+		# return puts rAssociation.countTogether(SELIC,DOLAR)
+		
+		data = Hash.new
+
+		for i in 0..indicadores.length - 1
+			unless i == indicadores.length - 1 
+				data["#{indicadores[i]} -- #{indicadores[i+1]}"] = Hash.new
+				data["#{indicadores[i]} -- #{indicadores[i+1]}"][:suport] = rAssociation.getSuport(indicadores[i],indicadores[i+1])
+				data["#{indicadores[i]} -- #{indicadores[i+1]}"][:confidence] = rAssociation.getConfidence(indicadores[i],indicadores[i+1])
+			else
+				data["#{indicadores[0]} -- #{indicadores[i]}"] = Hash.new
+				data["#{indicadores[0]} -- #{indicadores[i]}"][:suport]= rAssociation.getSuport(indicadores[0],indicadores[i])
+				data["#{indicadores[0]} -- #{indicadores[i]}"][:confidence]= rAssociation.getConfidence(indicadores[0],indicadores[i])
+
+			end
+		end
+		puts data
 
 	end
 
@@ -69,8 +92,11 @@ module DB
 	end
 
 	def self.modify(ant,prox)
-		return 1 if([ant,prox].max == prox) 
-		return 0 if([ant,prox].max == ant) 
+		if ant >= prox
+			return 1
+		else
+			return 0
+		end
 	end
 
 	def self.each_modify(hash)
@@ -118,7 +144,6 @@ module DB
 			end
 		end
 		return final_table
-		# puts final_table
 	end
 	
 end
